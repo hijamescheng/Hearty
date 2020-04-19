@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_chart"
+        android:title="@string/nav_chart"
+        android:icon="@drawable/ic_line_chart"/>
+    <item
+        android:id="@+id/nav_measurement"
+        android:title="@string/nav_history"
+        android:icon="@drawable/ic_format_list"/>
+    <item
+        android:id="@+id/nav_check_in"
+        android:title="@string/nav_check_in"
+        android:icon="@drawable/ic_check_circle_outline"/>
+    <item
+        android:id="@+id/nav_profile"
+        android:title="@string/nav_profile"
+        android:icon="@drawable/ic_account_circle"/>
+</menu>
