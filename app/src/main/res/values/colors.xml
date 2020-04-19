@@ -5,8 +5,10 @@
     <color name="colorAccent">#ffc119</color>
 
     <color name="white">#ffffff</color>
+    <color name="red">#ed1c24</color>
     <color name="divider_color">#eeefef</color>
     <color name="activity_background">#fafafa</color>
     <color name="ripple_color">#33000000</color>
     <color name="action_mode_status_bar_color">#3D3D31</color>
+    <color name="measurement_item_selected_color">#E8EDF6</color>
 </resources>

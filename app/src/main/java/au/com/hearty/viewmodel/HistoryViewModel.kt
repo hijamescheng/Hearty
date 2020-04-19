@@ -36,13 +36,6 @@ class HistoryViewModel : ViewModel() {
     }
 
     fun initSelection(id: Int) {
-        readingHistories.value = readingHistories.value?.map {
-            MeasurementItemModel(
-                it.measurement,
-                id == it.measurement.id,
-                true
-            )
-        }
         selectedItemIds.add(id)
         onItemSelectionChanged.value = selectedItemIds.size
     }

@@ -11,7 +11,7 @@ abstract class BaseRecyclerViewAdapter<M : Any, VH : BaseViewHolder<M>>(private 
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, position)
     }
 
     override fun onBindViewHolder(holder: VH, position: Int, payloads: MutableList<Any>) {
@@ -38,7 +38,7 @@ abstract class BaseRecyclerViewAdapter<M : Any, VH : BaseViewHolder<M>>(private 
 abstract class BaseViewHolder<M : Any>(view: View) :
     RecyclerView.ViewHolder(view) {
 
-    abstract fun bind(model: M)
+    abstract fun bind(model: M, position: Int)
     open fun bind(model: M, payloads: MutableList<Any>) {}
     abstract fun unbind()
 }

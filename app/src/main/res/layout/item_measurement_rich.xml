@@ -11,21 +11,12 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:background="@color/white">
-
-        <View
-            android:id="@+id/selectionIndicatorView"
-            android:layout_marginStart="@dimen/margin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/view2"
-            android:background="@drawable/ic_unselected"
-            android:layout_width="24dp"
-            android:layout_height="24dp"/>
 
         <View
             android:id="@+id/view2"
@@ -137,7 +128,7 @@
             android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/textView11"
-            app:layout_constraintStart_toEndOf="@id/selectionIndicatorView"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 

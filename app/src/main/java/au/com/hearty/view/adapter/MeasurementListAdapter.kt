@@ -1,12 +1,18 @@
 package au.com.hearty.view.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
+import au.com.hearty.R
 import au.com.hearty.databinding.ItemMeasurementRichBinding
 import au.com.hearty.model.MeasurementItemModel
 import au.com.hearty.view.OnMeasurementItemClickedListener
 import au.com.hearty.view.OnMeasurementItemLongClickedListener
+
+const val SELECTED = 1
+const val UNSELECTED = 2
 
 class MeasurementListAdapter constructor(
     private val onMeasurementItemLongPressListener: OnMeasurementItemLongClickedListener,
@@ -27,14 +33,30 @@ class MeasurementListAdapter constructor(
         private val onMeasurementItemClickListener: OnMeasurementItemClickedListener
     ) : BaseViewHolder<MeasurementItemModel>(binding.root) {
 
-        override fun bind(model: MeasurementItemModel) {
+        override fun bind(model: MeasurementItemModel, position: Int) {
             binding.model = model
+            Log.d("james", "$model")
             binding.root.setOnLongClickListener {
-                onMeasurementItemLongPressListener.onItemLongClicked(model)
+                Log.d("james", position.toString())
+                onMeasurementItemLongPressListener.onItemLongClicked(model, position)
                 true
             }
             binding.root.setOnClickListener {
-                onMeasurementItemClickListener.onItemClicked(model)
+                Log.d("james", position.toString())
+                onMeasurementItemClickListener.onItemClicked(model, position)
+            }
+            if (model.isSelected) {
+                binding.frame.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.measurement_item_selected_color))
+            }
+        }
+
+        override fun bind(model: MeasurementItemModel, payloads: MutableList<Any>) {
+            if (payloads.contains(SELECTED)) {
+                Log.d("james", "${model}")
+                binding.frame.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.measurement_item_selected_color))
+            }
+            if (payloads.contains(UNSELECTED)) {
+                binding.frame.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.white))
             }
         }
 
