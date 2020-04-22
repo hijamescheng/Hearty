@@ -44,6 +44,14 @@ class HistoryViewModel : ViewModel() {
         selectedItemIds.clear()
     }
 
+    fun getPosition(id: Int): Int {
+        if (readingHistories.value.isNullOrEmpty()) return -1
+        readingHistories.value?.forEachIndexed { index, measurementItemModel ->
+            if (measurementItemModel.measurement.id == id) return index
+        }
+        return -1
+    }
+
     fun deleteSelectedItems() {
         if (selectedItemIds.size > 0) {
             readingHistories.value =

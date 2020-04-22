@@ -18,10 +18,10 @@ abstract class BaseCoordinator<in V: View, B: ViewDataBinding> : Coordinator(), 
     internal var resumed: Boolean = false
         private set
 
-    protected var binding: B? = null
+    protected lateinit var binding: B
 
     open fun onBind(view: V) {
-        binding = DataBindingUtil.getBinding<B>(view)
+        binding = DataBindingUtil.getBinding<B>(view)!!
     }
 
     open fun onAttach(view: V) {}

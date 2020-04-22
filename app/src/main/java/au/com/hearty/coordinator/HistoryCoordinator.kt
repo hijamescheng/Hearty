@@ -1,5 +1,6 @@
 package au.com.hearty.coordinator
 
+import android.content.Intent
 import android.os.Build
 import android.view.ActionMode
 import android.view.Menu
@@ -15,6 +16,8 @@ import au.com.hearty.R
 import au.com.hearty.databinding.ActivityMeasurementsBinding
 import au.com.hearty.model.MeasurementItemModel
 import au.com.hearty.util.AnimationUtils
+import au.com.hearty.view.AddMeasurementActivity
+import au.com.hearty.view.MainActivity
 import au.com.hearty.view.OnMeasurementItemClickedListener
 import au.com.hearty.view.OnMeasurementItemLongClickedListener
 import au.com.hearty.view.adapter.MeasurementListAdapter
@@ -33,11 +36,14 @@ class HistoryCoordinator constructor(
     override fun onBind(view: CoordinatorLayout) {
         super.onBind(view)
         viewModel.getMeasurements()
-        binding?.viewModel = viewModel
-        binding?.recyclerView?.apply {
-            adapter = measurementListAdapter
-            layoutManager = LinearLayoutManager(context)
-            addItemDecoration(MeasurementItemDividerDecorator(context))
+        binding.apply {
+            viewModel = this@HistoryCoordinator.viewModel
+            recyclerView.apply {
+                adapter = measurementListAdapter
+                layoutManager = LinearLayoutManager(context)
+                addItemDecoration(MeasurementItemDividerDecorator(context))
+            }
+            addButton.setOnClickListener(saveButtonOnClickListener)
         }
 
         viewModel.onItemSelectionChanged.observe(fragment.viewLifecycleOwner, Observer {
@@ -49,13 +55,21 @@ class HistoryCoordinator constructor(
         })
     }
 
+    private val saveButtonOnClickListener = View.OnClickListener {
+        val intent = Intent(fragment.context, AddMeasurementActivity::class.java)
+        fragment.context?.startActivity(intent)
+    }
+
     private fun getOnMeasurementItemLongPressListener(): OnMeasurementItemLongClickedListener {
         return object : OnMeasurementItemLongClickedListener {
-            override fun onItemLongClicked(item: MeasurementItemModel, position: Int) {
+            override fun onItemLongClicked(item: MeasurementItemModel) {
                 if (actionMode == null) {
-                    actionMode = fragment.activity?.startActionMode(ActionModeCallback())
+                    actionMode = (fragment.activity as MainActivity).getToolbar().startActionMode(ActionModeCallback())
                     viewModel.initSelection(item.measurement.id)
-                    measurementListAdapter.notifyItemChanged(position, SELECTED)
+                    val itemPosition = viewModel.getPosition(item.measurement.id)
+                    if (itemPosition >= 0) {
+                        measurementListAdapter.notifyItemChanged(itemPosition, SELECTED)
+                    }
                 }
                 true
             }
@@ -64,14 +78,18 @@ class HistoryCoordinator constructor(
 
     private fun getOnMeasurementItemClickedListener(): OnMeasurementItemClickedListener {
         return object : OnMeasurementItemClickedListener {
-            override fun onItemClicked(item: MeasurementItemModel, position: Int) {
+            override fun onItemClicked(item: MeasurementItemModel) {
                 if (actionMode == null) return
-                if (!viewModel.isItemSelected(item.measurement.id)) {
+                val payload = if (!viewModel.isItemSelected(item.measurement.id)) {
                     viewModel.selectedItem(item.measurement.id)
-                    measurementListAdapter.notifyItemChanged(position, SELECTED)
+                    SELECTED
                 } else {
                     viewModel.unSelectItem(item.measurement.id)
-                    measurementListAdapter.notifyItemChanged(position, UNSELECTED)
+                    UNSELECTED
+                }
+                val itemPosition = viewModel.getPosition(item.measurement.id)
+                if (itemPosition >= 0) {
+                    measurementListAdapter.notifyItemChanged(itemPosition, payload)
                 }
             }
         }
@@ -82,7 +100,7 @@ class HistoryCoordinator constructor(
         getOnMeasurementItemClickedListener()
     )
 
-    inner class ActionModeCallback: ActionMode.Callback {
+    inner class ActionModeCallback : ActionMode.Callback {
 
         override fun onActionItemClicked(p0: ActionMode?, p1: MenuItem?): Boolean {
             viewModel.deleteSelectedItems()
@@ -95,11 +113,15 @@ class HistoryCoordinator constructor(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     AnimationUtils.animateStatusBarColor(
                         this,
-                        ResourcesCompat.getColor(resources, R.color.action_mode_status_bar_color, theme),
+                        ResourcesCompat.getColor(
+                            resources,
+                            R.color.action_mode_status_bar_color,
+                            theme
+                        ),
                         R.color.action_mode_status_bar_color
                     )
                 }
-                binding?.addButton?.visibility = View.GONE
+                binding.addButton.visibility = View.GONE
             }
             return true
         }
@@ -122,7 +144,7 @@ class HistoryCoordinator constructor(
             }
             viewModel.clearSelection()
             measurementListAdapter.notifyAllChanged(UNSELECTED)
-            binding?.addButton?.visibility = View.VISIBLE
+            binding.addButton.visibility = View.VISIBLE
         }
     }
 }

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Hearty</string>
-    <string name="nav_chart">Chart</string>
+    <string name="nav_chart">Insight</string>
     <string name="nav_history">History</string>
     <string name="nav_check_in">Check in</string>
     <string name="nav_profile">Profile</string>

@@ -38,12 +38,12 @@ class MeasurementListAdapter constructor(
             Log.d("james", "$model")
             binding.root.setOnLongClickListener {
                 Log.d("james", position.toString())
-                onMeasurementItemLongPressListener.onItemLongClicked(model, position)
+                onMeasurementItemLongPressListener.onItemLongClicked(model)
                 true
             }
             binding.root.setOnClickListener {
                 Log.d("james", position.toString())
-                onMeasurementItemClickListener.onItemClicked(model, position)
+                onMeasurementItemClickListener.onItemClicked(model)
             }
             if (model.isSelected) {
                 binding.frame.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.measurement_item_selected_color))
