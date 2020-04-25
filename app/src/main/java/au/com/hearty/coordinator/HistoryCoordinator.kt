@@ -9,11 +9,15 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import au.com.hearty.R
 import au.com.hearty.databinding.ActivityMeasurementsBinding
+import au.com.hearty.extension.refresh
+import au.com.hearty.model.Measurement
 import au.com.hearty.model.MeasurementItemModel
 import au.com.hearty.util.AnimationUtils
 import au.com.hearty.view.AddMeasurementActivity
@@ -35,7 +39,6 @@ class HistoryCoordinator constructor(
 
     override fun onBind(view: CoordinatorLayout) {
         super.onBind(view)
-        viewModel.getMeasurements()
         binding.apply {
             viewModel = this@HistoryCoordinator.viewModel
             recyclerView.apply {
@@ -53,6 +56,8 @@ class HistoryCoordinator constructor(
                 actionMode?.title = it.toString()
             }
         })
+
+        binding.recyclerView.addOnScrollListener(recyclerViewOnScrollListener)
     }
 
     private val saveButtonOnClickListener = View.OnClickListener {
@@ -60,13 +65,24 @@ class HistoryCoordinator constructor(
         fragment.context?.startActivity(intent)
     }
 
+    private val recyclerViewOnScrollListener = object: RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            if (dy > 0 && binding.addButton.isVisible) {
+                binding.addButton.hide()
+            } else if (dy < 0 && !binding.addButton.isVisible) {
+                binding.addButton.show()
+            }
+        }
+    }
+
     private fun getOnMeasurementItemLongPressListener(): OnMeasurementItemLongClickedListener {
         return object : OnMeasurementItemLongClickedListener {
-            override fun onItemLongClicked(item: MeasurementItemModel) {
+            override fun onItemLongClicked(item: Measurement) {
                 if (actionMode == null) {
                     actionMode = (fragment.activity as MainActivity).getToolbar().startActionMode(ActionModeCallback())
-                    viewModel.initSelection(item.measurement.id)
-                    val itemPosition = viewModel.getPosition(item.measurement.id)
+                    viewModel.initSelection(item.id)
+                    val itemPosition = viewModel.getPosition(item.id)
                     if (itemPosition >= 0) {
                         measurementListAdapter.notifyItemChanged(itemPosition, SELECTED)
                     }
@@ -78,16 +94,16 @@ class HistoryCoordinator constructor(
 
     private fun getOnMeasurementItemClickedListener(): OnMeasurementItemClickedListener {
         return object : OnMeasurementItemClickedListener {
-            override fun onItemClicked(item: MeasurementItemModel) {
+            override fun onItemClicked(item: Measurement) {
                 if (actionMode == null) return
-                val payload = if (!viewModel.isItemSelected(item.measurement.id)) {
-                    viewModel.selectedItem(item.measurement.id)
+                val payload = if (!viewModel.isItemSelected(item.id)) {
+                    viewModel.selectedItem(item.id)
                     SELECTED
                 } else {
-                    viewModel.unSelectItem(item.measurement.id)
+                    viewModel.unSelectItem(item.id)
                     UNSELECTED
                 }
-                val itemPosition = viewModel.getPosition(item.measurement.id)
+                val itemPosition = viewModel.getPosition(item.id)
                 if (itemPosition >= 0) {
                     measurementListAdapter.notifyItemChanged(itemPosition, payload)
                 }

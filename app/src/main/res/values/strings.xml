@@ -6,9 +6,18 @@
     <string name="nav_profile">Profile</string>
     <string name="menu_delete">Delete</string>
 
-    <string name="systolic_title">SYS</string>
-    <string name="diastolic_title">DIA</string>
-    <string name="pulse_title">Pulse</string>
-    <string name="weight_title">Weight</string>
+    <string name="systolic_title">SYS (mmHg)</string>
+    <string name="diastolic_title">DIA (mmHg)</string>
+    <string name="pulse_title">Pulse (BPM)</string>
+    <string name="weight_title">Weight (kg)</string>
+    <string name="mmHg">mmHg</string>
+    <string name="kg">mmHg</string>
+    <string name="bpm">BPM</string>
     <string name="sys_dia_readings">%1$s / %2$s</string>
+
+    <string name="nav_save">Save</string>
+    <string name="error_sys_empty_value">SYS reading is missing</string>
+    <string name="error_dia_empty_value">DIA reading is missing</string>
+    <string name="error_pulse_empty_value">Pulse reading is missing</string>
+    <string name="error_weight_empty_value">Weight is missing</string>
 </resources>

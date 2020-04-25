@@ -1,27 +1,17 @@
 package au.com.hearty.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import au.com.hearty.data.MeasurementRepositoryContract
 import au.com.hearty.model.Measurement
-import au.com.hearty.model.MeasurementItemModel
 
-class HistoryViewModel : ViewModel() {
+class HistoryViewModel (private val repository: MeasurementRepositoryContract): ViewModel() {
 
-    val readingHistories = MutableLiveData<List<MeasurementItemModel>>()
+    val readingHistories: LiveData<List<Measurement>> = repository.listAllMeasurement()
+
     private val selectedItemIds = mutableSetOf<Int>()
     val onItemSelectionChanged = MutableLiveData<Int>().apply { value = 0 }
-
-    fun getMeasurements() {
-        val list = listOf(
-            MeasurementItemModel(Measurement(1, 119, 80, 66, 80, "18/04/2020 8:40 pm")),
-            MeasurementItemModel(Measurement(2, 122, 87, 69, 80, "18/04/2020 8:39 pm")),
-            MeasurementItemModel(Measurement(3, 129, 78, 67, 80, "18/04/2020 8:38 pm")),
-            MeasurementItemModel(Measurement(4, 135, 89, 87, 80, "18/04/2020 8:37 pm")),
-            MeasurementItemModel(Measurement(5, 121, 85, 68, 80, "18/04/2020 8:36 pm")),
-            MeasurementItemModel(Measurement(6, 139, 80, 78, 80, "18/04/2020 8:35 pm"))
-        )
-        readingHistories.value = list
-    }
 
     fun isItemSelected(id: Int): Boolean = selectedItemIds.contains(id)
 
@@ -46,18 +36,21 @@ class HistoryViewModel : ViewModel() {
 
     fun getPosition(id: Int): Int {
         if (readingHistories.value.isNullOrEmpty()) return -1
-        readingHistories.value?.forEachIndexed { index, measurementItemModel ->
-            if (measurementItemModel.measurement.id == id) return index
+        readingHistories.value?.forEachIndexed { index, item ->
+            if (item.id == id) return index
         }
         return -1
     }
 
-    fun deleteSelectedItems() {
+    fun deleteSelectedItems(): MutableLiveData<Boolean> {
+        val result = MutableLiveData<Boolean>().apply { value = false }
+        val itemsToBeDeleted = selectedItemIds.map { Measurement(id = it) }
         if (selectedItemIds.size > 0) {
-            readingHistories.value =
-                readingHistories.value?.filterNot { selectedItemIds.contains(it.measurement.id) }
+            repository.removeMeasurements(*itemsToBeDeleted.toTypedArray())
             selectedItemIds.clear()
             onItemSelectionChanged.value = selectedItemIds.size
+            result.value = true
         }
+        return result
     }
 }

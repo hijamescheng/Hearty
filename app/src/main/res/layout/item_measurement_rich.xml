@@ -7,7 +7,7 @@
         <import type="android.view.View"/>
         <variable
             name="model"
-            type="au.com.hearty.model.MeasurementItemModel" />
+            type="au.com.hearty.model.Measurement" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,7 +51,7 @@
             android:id="@+id/sysReading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{@string/sys_dia_readings(model.measurement.systolic, model.measurement.diastolic)}"
+            android:text="@{@string/sys_dia_readings(model.systolic, model.diastolic)}"
             android:textColor="#000000"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/textView3"
@@ -81,7 +81,7 @@
             android:id="@+id/pulseReading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(model.measurement.pulse)}"
+            android:text="@{String.valueOf(model.pulse)}"
             android:textColor="#000000"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/textView5"
@@ -112,7 +112,7 @@
             android:id="@+id/weightReading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(model.measurement.weight)}"
+            android:text="@{String.valueOf(model.weight)}"
             android:textColor="#000000"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/textView7"
@@ -124,7 +124,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="Today"
+            tools:text="Today"
+            app:date_added="@{model.dateTaken}"
             android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/textView11"
@@ -136,7 +137,8 @@
             android:id="@+id/textView11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12:24 PM"
+            tools:text="12:24 PM"
+            app:time_added="@{model.dateTaken}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView10"
             app:layout_constraintStart_toStartOf="@+id/textView10"

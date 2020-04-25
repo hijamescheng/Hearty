@@ -1,11 +1,11 @@
 package au.com.hearty.view
 
-import au.com.hearty.model.MeasurementItemModel
+import au.com.hearty.model.Measurement
 
 interface OnMeasurementItemClickedListener {
-    fun onItemClicked(item: MeasurementItemModel)
+    fun onItemClicked(item: Measurement)
 }
 
 interface OnMeasurementItemLongClickedListener {
-    fun onItemLongClicked(item: MeasurementItemModel)
+    fun onItemLongClicked(item: Measurement)
 }

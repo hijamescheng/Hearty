@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import au.com.hearty.R
 import au.com.hearty.databinding.ItemMeasurementRichBinding
-import au.com.hearty.model.MeasurementItemModel
+import au.com.hearty.model.Measurement
 import au.com.hearty.view.OnMeasurementItemClickedListener
 import au.com.hearty.view.OnMeasurementItemLongClickedListener
 
@@ -17,7 +17,7 @@ const val UNSELECTED = 2
 class MeasurementListAdapter constructor(
     private val onMeasurementItemLongPressListener: OnMeasurementItemLongClickedListener,
     private val onMeasurementItemClickListener: OnMeasurementItemClickedListener
-) : BaseRecyclerViewAdapter<MeasurementItemModel, MeasurementListAdapter.MeasurementViewHolder>(
+) : BaseRecyclerViewAdapter<Measurement, MeasurementListAdapter.MeasurementViewHolder>(
     MeasurementItemDiffCallback()
 ) {
 
@@ -31,9 +31,9 @@ class MeasurementListAdapter constructor(
         private val binding: ItemMeasurementRichBinding,
         private val onMeasurementItemLongPressListener: OnMeasurementItemLongClickedListener,
         private val onMeasurementItemClickListener: OnMeasurementItemClickedListener
-    ) : BaseViewHolder<MeasurementItemModel>(binding.root) {
+    ) : BaseViewHolder<Measurement>(binding.root) {
 
-        override fun bind(model: MeasurementItemModel, position: Int) {
+        override fun bind(model: Measurement, position: Int) {
             binding.model = model
             Log.d("james", "$model")
             binding.root.setOnLongClickListener {
@@ -45,12 +45,9 @@ class MeasurementListAdapter constructor(
                 Log.d("james", position.toString())
                 onMeasurementItemClickListener.onItemClicked(model)
             }
-            if (model.isSelected) {
-                binding.frame.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.measurement_item_selected_color))
-            }
         }
 
-        override fun bind(model: MeasurementItemModel, payloads: MutableList<Any>) {
+        override fun bind(model: Measurement, payloads: MutableList<Any>) {
             if (payloads.contains(SELECTED)) {
                 Log.d("james", "${model}")
                 binding.frame.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.measurement_item_selected_color))
@@ -67,15 +64,11 @@ class MeasurementListAdapter constructor(
     }
 }
 
-class MeasurementItemDiffCallback : DiffUtil.ItemCallback<MeasurementItemModel>() {
-    override fun areItemsTheSame(oldItem: MeasurementItemModel, newItem: MeasurementItemModel): Boolean =
-        oldItem.measurement.id == newItem.measurement.id &&
-                oldItem.isSelected == newItem.isSelected &&
-                oldItem.isSelectionModeOn == newItem.isSelectionModeOn
+class MeasurementItemDiffCallback : DiffUtil.ItemCallback<Measurement>() {
+    override fun areItemsTheSame(oldItem: Measurement, newItem: Measurement): Boolean =
+        oldItem.id == newItem.id
 
-    override fun areContentsTheSame(oldItem: MeasurementItemModel, newItem: MeasurementItemModel): Boolean {
-        return oldItem.measurement == newItem.measurement &&
-                oldItem.isSelected == newItem.isSelected &&
-                oldItem.isSelectionModeOn == newItem.isSelectionModeOn
+    override fun areContentsTheSame(oldItem: Measurement, newItem: Measurement): Boolean {
+        return oldItem == newItem
     }
 }

@@ -4,15 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 @Suppress("UNCHECKED_CAST")
-class ViewModelFactory : ViewModelProvider.NewInstanceFactory() {
+class ViewModelFactory<T>(val creator: ()-> T) : ViewModelProvider.NewInstanceFactory() {
 
     override fun <T : ViewModel> create(modelClass: Class<T>) =
-        with(modelClass) {
-            when {
-                isAssignableFrom(HistoryViewModel::class.java) ->
-                    HistoryViewModel()
-                else ->
-                    throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-            }
-        } as T
+        creator() as T
 }
