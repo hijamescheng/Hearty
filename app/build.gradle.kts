@@ -2,11 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktlint)
 }
+
 
 android {
     namespace = "com.happypath.studio.hearty"
     compileSdk = 36
+    flavorDimensions += "env"
 
     defaultConfig {
         applicationId = "com.happypath.studio.hearty"
@@ -18,15 +23,33 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    productFlavors {
+        create("prod") {
+            dimension = "env"
+        }
+
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+    }
+
     buildTypes {
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -40,6 +63,20 @@ android {
 }
 
 dependencies {
+    implementation(libs.hilt.android)
+    implementation(libs.roomDB)
+    implementation(libs.roomKTX)
+    //implementation("com.chargemap.compose:numberpicker:1.0.5")
+
+    testImplementation(libs.roomTest)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutineTest)
+    testImplementation(libs.turbine)
+
+    ksp(libs.roomCompiler)
+    annotationProcessor(libs.roomCompiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

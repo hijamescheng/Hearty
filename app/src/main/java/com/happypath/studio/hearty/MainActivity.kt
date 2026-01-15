@@ -39,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.happypath.studio.hearty.ui.AddDataScreen
+import com.happypath.studio.hearty.ui.AddDataScreenTopBar
 import com.happypath.studio.hearty.ui.theme.HeartyTheme
 
 class MainActivity : ComponentActivity() {
@@ -49,17 +50,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             HeartyTheme {
                 val navController = rememberNavController()
+                val backStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = backStackEntry?.destination?.route
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        BottomNavigationBar(navController)
+                        if (currentRoute in Destination.entries.filter { it.isBottomNav }
+                                .map { it.route }) {
+                            BottomNavigationBar(navController)
+                        }
                     },
                     topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(text = "Hearty")
-                            }
-                        )
+                        when (currentRoute) {
+                            Destination.AddData.route -> AddDataScreenTopBar(navController)
+                            else -> TopBar()
+                        }
+
                     },
                     floatingActionButton = {
                         FloatingActionButton(
@@ -78,6 +85,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar() {
+    TopAppBar(
+        title = {
+            Text(text = "Hearty")
+        }
+    )
+}
 
 @Composable
 fun AppNavHost(
@@ -89,14 +105,12 @@ fun AppNavHost(
         navController,
         startDestination = startDestination.route
     ) {
-        composable(Destination.AddData.route) {
-            AddDataScreen()
-        }
         Destination.entries.forEach { destination ->
             composable(destination.route) {
                 when (destination) {
                     Destination.HOME -> HomePage(innerPadding)
-                    else -> TestPage(innerPadding)
+                    Destination.Diary, Destination.Profile -> TestPage(innerPadding)
+                    else -> AddDataScreen(innerPadding)
                 }
             }
         }
