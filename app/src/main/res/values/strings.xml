@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Hearty</string>
+    <string name="add_measurement_save">Save</string>
+    <string name="add_measurement_title">Add Measurement</string>
+    <string name="add_measurement_blood_pressure">Blood pressure</string>
+    <string name="add_measurement_bp_unit">mmHg</string>
+    <string name="add_measurement_separator">/</string>
+    <string name="add_measurement_details_title">MEASUREMENT DETAILS</string>
+    <string name="add_measurement_arm_location">Arm location</string>
+    <string name="add_measurement_note">Note</string>
+    <string-array name="arm_location_values">
+        <item>Left</item>
+        <item>Right</item>
+    </string-array>
 </resources>
