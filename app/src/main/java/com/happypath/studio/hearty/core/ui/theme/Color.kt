@@ -12,6 +12,9 @@ val Pink40 = Color(0xFFCCE9E2)
 
 val Gray = Color(0xFFE8E8E8)
 
-val BottomNavBar = Color(0xFFFBFEFB)
-val WindowBackground = Color(0xFFEEF1EE)
+val BottomNavBar = Color(0xFFECEEEC)
+val WindowBackground = Color(0xFFF8FAF7)
 val DarkGreen = Color(0xFF191C19)
+
+val Subtext = Color(0xFF565E5B)
+val CardBackground = Color(0xFFF2F4F2)

@@ -12,4 +12,8 @@
         <item>Left</item>
         <item>Right</item>
     </string-array>
+    <string name="systolic_title">SYS</string>
+    <string name="diastolic_title">DIA</string>
+    <string name="pulse_title">Pulse</string>
+    <string name="pulse_unit">BPM</string>
 </resources>

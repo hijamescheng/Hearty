@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.happypath.studio.hearty.R
 import com.happypath.studio.hearty.core.ui.NumberPicker
+import com.happypath.studio.hearty.core.ui.theme.CardBackground
 import com.happypath.studio.hearty.core.ui.theme.Gray
 
 
@@ -107,7 +108,7 @@ fun AddNote(note: String, onNoteChange: (String) -> Unit) {
                 .padding(top = dimensionResource(R.dimen.padding_medium))
                 .height(120.dp)
                 .clip(shape = RoundedCornerShape(8.dp))
-                .background(color = Gray),
+                .background(color = CardBackground),
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface
             )
