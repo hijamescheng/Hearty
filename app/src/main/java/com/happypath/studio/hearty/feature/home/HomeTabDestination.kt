@@ -1,4 +1,4 @@
-package com.happypath.studio.hearty.ui
+package com.happypath.studio.hearty.feature.home
 
 enum class HomeTabDestination(
     val route: String,

@@ -1,9 +1,11 @@
 package com.happypath.studio.hearty
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,24 +18,32 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.happypath.studio.hearty.ui.AddDataScreen
-import com.happypath.studio.hearty.ui.AddDataScreenTopBar
-import com.happypath.studio.hearty.ui.BottomNavigationBar
-import com.happypath.studio.hearty.ui.Destination
-import com.happypath.studio.hearty.ui.HomePage
-import com.happypath.studio.hearty.ui.HomeTabDestination
-import com.happypath.studio.hearty.ui.TopBar
-import com.happypath.studio.hearty.ui.theme.DarkGreen
-import com.happypath.studio.hearty.ui.theme.HeartyTheme
-import com.happypath.studio.hearty.ui.theme.Pink40
+import com.happypath.studio.hearty.core.ui.AddDataScreenTopBar
+import com.happypath.studio.hearty.core.ui.BottomNavigationBar
+import com.happypath.studio.hearty.core.ui.Destination
+import com.happypath.studio.hearty.core.ui.TopBar
+import com.happypath.studio.hearty.core.ui.theme.DarkGreen
+import com.happypath.studio.hearty.core.ui.theme.HeartyTheme
+import com.happypath.studio.hearty.core.ui.theme.Pink40
+import com.happypath.studio.hearty.feature.adddata.AddDataScreen
+import com.happypath.studio.hearty.feature.adddata.AddDataViewModel
+import com.happypath.studio.hearty.feature.home.HomePage
+import com.happypath.studio.hearty.feature.home.HomeTabDestination
+import dagger.hilt.android.AndroidEntryPoint
+import kotlin.getValue
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @SuppressLint("UnrememberedGetBackStackEntry")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +67,13 @@ class MainActivity : ComponentActivity() {
                     },
                     topBar = {
                         when (currentRoute) {
-                            Destination.AddData.route -> AddDataScreenTopBar(navController)
+                            Destination.AddData.route -> {
+                                val addDataEntry = remember(navController, Destination.AddData.route) {
+                                    navController.getBackStackEntry(Destination.AddData.route)
+                                }
+                                val viewModel: AddDataViewModel = hiltViewModel(addDataEntry)
+                                AddDataScreenTopBar(navController, viewModel)
+                            }
                             else -> TopBar()
                         }
 
@@ -81,39 +97,42 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@Composable
-fun AppNavHost(
-    innerPadding: PaddingValues,
-    navController: NavHostController,
-    startDestination: Destination
-) {
-    NavHost(
-        navController,
-        startDestination = startDestination.route
+    @SuppressLint("UnrememberedGetBackStackEntry")
+    @Composable
+    fun AppNavHost(
+        innerPadding: PaddingValues,
+        navController: NavHostController,
+        startDestination: Destination
     ) {
-        Destination.entries.forEach { destination ->
-            composable(destination.route) {
-                when (destination) {
-                    Destination.HOME -> HomePage(innerPadding)
-                    Destination.Journal, Destination.Profile -> TestPage(innerPadding)
-                    else -> AddDataScreen(innerPadding)
+        NavHost(
+            navController,
+            startDestination = startDestination.route
+        ) {
+            Destination.entries.forEach { destination ->
+                composable(destination.route) {
+                    when (destination) {
+                        Destination.HOME -> HomePage(innerPadding)
+                        Destination.Journal, Destination.Profile -> TestPage(innerPadding)
+                        else -> {
+                            val addDataEntry = remember(navController, Destination.AddData.route) {
+                                navController.getBackStackEntry(Destination.AddData.route)
+                            }
+                            val addDataViewModel: AddDataViewModel = hiltViewModel(addDataEntry)
+
+                            AddDataScreen(innerPadding, addDataViewModel)
+                        }
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-fun TestPage(innerPadding: PaddingValues) {
-    Text(
-        text = "Test Page",
-        modifier = Modifier.padding(innerPadding)
-    )
-}
-
-@Composable
-fun HomeTabScreen(innerPadding: PaddingValues, destination: HomeTabDestination) {
-    Text(destination.label, modifier = Modifier.padding(top = innerPadding.calculateTopPadding()))
+    @Composable
+    fun TestPage(innerPadding: PaddingValues) {
+        Text(
+            text = "Test Page",
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }

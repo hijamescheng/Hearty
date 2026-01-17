@@ -1,4 +1,4 @@
-package com.happypath.studio.hearty.ui
+package com.happypath.studio.hearty.core.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -11,10 +11,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.happypath.studio.hearty.R
-import com.happypath.studio.hearty.ui.theme.DarkGreen
-import com.happypath.studio.hearty.ui.theme.WindowBackground
+import com.happypath.studio.hearty.core.ui.theme.DarkGreen
+import com.happypath.studio.hearty.core.ui.theme.WindowBackground
+import com.happypath.studio.hearty.feature.adddata.AddDataFormEvent
+import com.happypath.studio.hearty.feature.adddata.AddDataViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,7 +32,7 @@ fun TopBar() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDataScreenTopBar(navController: NavController) {
+fun AddDataScreenTopBar(navController: NavController, viewModel: AddDataViewModel) {
     TopAppBar(
         title = {},
         navigationIcon = {
@@ -41,7 +44,9 @@ fun AddDataScreenTopBar(navController: NavController) {
         },
         colors = topAppBarColor(),
         actions = {
-            TextButton(onClick = {}) {
+            TextButton(onClick = {
+                viewModel.onEvent(AddDataFormEvent.Submit)
+            }) {
                 Text(stringResource(R.string.add_measurement_save))
             }
         })

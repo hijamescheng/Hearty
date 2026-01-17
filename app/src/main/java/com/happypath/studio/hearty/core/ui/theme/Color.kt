@@ -1,4 +1,4 @@
-package com.happypath.studio.hearty.ui.theme
+package com.happypath.studio.hearty.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

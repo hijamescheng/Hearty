@@ -1,4 +1,4 @@
-package com.happypath.studio.hearty.ui
+package com.happypath.studio.hearty.core.ui
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -13,8 +13,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import com.happypath.studio.hearty.ui.theme.BottomNavBar
-import com.happypath.studio.hearty.ui.theme.Pink40
+import com.happypath.studio.hearty.core.ui.theme.BottomNavBar
+import com.happypath.studio.hearty.core.ui.theme.Pink40
 
 @Composable
 fun BottomNavigationBar(navController: NavController, currentRoute: Int) {

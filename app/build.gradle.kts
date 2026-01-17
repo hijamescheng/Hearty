@@ -56,6 +56,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
     buildFeatures {
         compose = true
@@ -66,7 +67,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.roomDB)
     implementation(libs.roomKTX)
-    //implementation("com.chargemap.compose:numberpicker:1.0.5")
+    implementation(libs.hilt.navigation)
 
     testImplementation(libs.roomTest)
     testImplementation(libs.mockk)

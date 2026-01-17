@@ -1,4 +1,4 @@
-package com.happypath.studio.hearty.ui
+package com.happypath.studio.hearty.core.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior

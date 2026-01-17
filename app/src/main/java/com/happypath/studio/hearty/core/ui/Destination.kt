@@ -1,4 +1,4 @@
-package com.happypath.studio.hearty.ui
+package com.happypath.studio.hearty.core.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
