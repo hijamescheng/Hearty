@@ -4,6 +4,7 @@ import androidx.sqlite.SQLiteException
 import com.happypath.studio.hearty.data.room.toDomain
 import com.happypath.studio.hearty.data.room.toEntity
 import com.happypath.studio.hearty.domain.BloodPressureMeasurement
+import com.happypath.studio.hearty.domain.MeasurementQueryResult
 import com.happypath.studio.hearty.domain.MeasurementRepository
 import jakarta.inject.Named
 import kotlinx.coroutines.CoroutineDispatcher
@@ -36,6 +37,17 @@ class MeasurementRepositoryImpl @Inject constructor(
     ): Flow<Result<List<BloodPressureMeasurement>>> {
         return localDataSource.getMeasurements(startDate, endDate).map { result ->
             Result.success(result.map { it.toDomain() })
+        }.catch { e ->
+            emit(Result.failure(e))
+        }.flowOn(ioDispatcher)
+    }
+
+    override suspend fun getAvgMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<Result<List<MeasurementQueryResult>>> {
+        return localDataSource.getAvgMeasurementsBetween(startDate, endDate).map { result ->
+            Result.success(result)
         }.catch { e ->
             emit(Result.failure(e))
         }.flowOn(ioDispatcher)

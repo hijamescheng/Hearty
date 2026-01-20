@@ -16,4 +16,6 @@
     <string name="diastolic_title">DIA</string>
     <string name="pulse_title">Pulse</string>
     <string name="pulse_unit">BPM</string>
+    <string name="no_data_title">No data</string>
+    <string name="no_data_description">No data lodged for this period</string>
 </resources>

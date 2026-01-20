@@ -11,6 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +23,10 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +41,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.happypath.studio.hearty.R
 import com.happypath.studio.hearty.core.ui.NumberPicker
 import com.happypath.studio.hearty.core.ui.theme.CardBackground
-import com.happypath.studio.hearty.core.ui.theme.Gray
+import com.happypath.studio.hearty.feature.home.cardColor
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +71,19 @@ fun AddDataScreen(innerPadding: PaddingValues, viewModel: AddDataViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Time")
-            Text("Today 2:47 PM")
+
+            Row {
+                DatePickerExample(onDateSelected = {})
+
+                var showDialog by remember { mutableStateOf(false) }
+                TextButton(onClick = { showDialog = true }) { Text("12:00") }
+
+                if (showDialog) {
+                    EnterTime(onConfirm = { showDialog = false }, onDismiss = {
+                        showDialog = false
+                    })
+                }
+            }
         }
         HorizontalDivider()
         SelectBloodPressureRecord(
@@ -91,6 +115,90 @@ fun AddDataScreen(innerPadding: PaddingValues, viewModel: AddDataViewModel) {
         }
         AddNote(uiState.value.note) {
             viewModel.onEvent(AddDataFormEvent.OnNoteUpdate(it))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerExample(
+    onDateSelected: (LocalDate) -> Unit
+) {
+    var showPicker by remember { mutableStateOf(false) }
+
+    TextButton(onClick = { showPicker = true }) {
+        Text("Time")
+    }
+
+    if (showPicker) {
+        val datePickerState = rememberDatePickerState()
+
+        DatePickerDialog(
+            onDismissRequest = { showPicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val date = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                            onDateSelected(date)
+                        }
+                        showPicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EnterTime(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val currentTime = Calendar.getInstance()
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = true,
+    )
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            colors = cardColor()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Enter time")
+                TimeInput(
+                    modifier = Modifier.padding(top = 16.dp),
+                    state = timePickerState,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    TextButton(onClick = onConfirm) {
+                        Text("OK")
+                    }
+                }
+            }
         }
     }
 }

@@ -1,29 +1,224 @@
 package com.happypath.studio.hearty.util
 
+import com.happypath.studio.hearty.feature.home.MeasurementScope
+import com.happypath.studio.hearty.feature.home.MeasurementScope.DAY
+import com.happypath.studio.hearty.feature.home.MeasurementScope.WEEK
+import com.happypath.studio.hearty.feature.home.MeasurementScope.MONTH
+import com.happypath.studio.hearty.feature.home.MeasurementScope.YEAR
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
-fun getStartAndEndOfToday(): Pair<Long, Long> {
+fun getStartDateOf(scope: MeasurementScope): Long {
+    val zoneId: ZoneId = ZoneId.systemDefault()
+    val now = ZonedDateTime.now(zoneId)
+    return when (scope) {
+        DAY -> LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        WEEK -> now
+            .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            .toLocalDate()
+            .atStartOfDay(zoneId)
+            .toInstant()
+            .toEpochMilli()
+
+        MONTH -> now
+            .with(TemporalAdjusters.firstDayOfMonth())
+            .toLocalDate()
+            .atStartOfDay(zoneId)
+            .toInstant()
+            .toEpochMilli()
+
+        YEAR -> now
+            .with(TemporalAdjusters.firstDayOfYear())
+            .toLocalDate()
+            .atStartOfDay(zoneId)
+            .toInstant()
+            .toEpochMilli()
+    }
+}
+
+fun previousDayRange(startDateMillis: Long, isPrevious: Boolean): Pair<Long, Long> {
+    val zone = ZoneId.systemDefault()
+
+    val startOfPreviousDay = Instant.ofEpochMilli(startDateMillis)
+        .atZone(zone)
+        .toLocalDate()
+        .let {
+            if (isPrevious) it.minusDays(1) else it.plusDays(1)
+        }
+        .atStartOfDay(zone)
+        .toInstant()
+        .toEpochMilli()
+
+    val endOfPreviousDay = Instant.ofEpochMilli(startDateMillis)
+        .atZone(zone)
+        .toLocalDate()
+        .atStartOfDay(zone)
+        .toInstant()
+        .toEpochMilli()
+
+    return startOfPreviousDay to endOfPreviousDay
+}
+
+fun getStartAndEndOfToday(dateRange: DateRange = DateRange.CURRENT): Pair<Long, Long> {
     val today = LocalDate.now()
 
     // Start of day
-    val startOfDay = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    val startOfDay = today
+        .atStartOfDay(ZoneId.systemDefault())
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusDays(1)
+                DateRange.NEXT -> it.plusDays(1)
+                else -> it
+            }
+        }
+        .toInstant().toEpochMilli()
 
     // End of day (23:59:59.999)
     val endOfDay = today
         .atTime(23, 59, 59, 999_000_000)
         .atZone(ZoneId.systemDefault())
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusDays(1)
+                DateRange.NEXT -> it.plusDays(1)
+                else -> it
+            }
+        }
         .toInstant()
         .toEpochMilli()
 
     return startOfDay to endOfDay
 }
 
-fun Long.toDate(pattern: String = "MMM dd, yyyy 'at' HH:mm a"): String {
+fun getCurrentWeekRange(
+    dateRange: DateRange = DateRange.CURRENT,
+    zoneId: ZoneId = ZoneId.systemDefault()
+): Pair<Long, Long> {
+    val now = ZonedDateTime.now(zoneId)
+
+    val startOfWeek = now
+        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        .toLocalDate()
+        .atStartOfDay(zoneId)
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusDays(7)
+                DateRange.NEXT -> it.plusDays(7)
+                else -> it
+            }
+        }
+        .toInstant()
+        .toEpochMilli()
+
+    val endOfWeek = now
+        .with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+        .toLocalDate()
+        .atTime(LocalTime.MAX)
+        .atZone(zoneId)
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusWeeks(1)
+                DateRange.NEXT -> it.plusWeeks(1)
+                else -> it
+            }
+        }
+        .toInstant()
+        .toEpochMilli()
+
+    return startOfWeek to endOfWeek
+}
+
+fun getCurrentMonthRange(
+    dateRange: DateRange = DateRange.CURRENT,
+    zoneId: ZoneId = ZoneId.systemDefault()
+): Pair<Long, Long> {
+
+    val now = ZonedDateTime.now(zoneId)
+
+    val startOfMonth = now
+        .with(TemporalAdjusters.firstDayOfMonth())
+        .toLocalDate()
+        .atStartOfDay(zoneId)
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusMonths(1)
+                DateRange.NEXT -> it.plusMonths(1)
+                else -> it
+            }
+        }
+        .toInstant()
+        .toEpochMilli()
+
+    val endOfMonth = now
+        .with(TemporalAdjusters.lastDayOfMonth())
+        .toLocalDate()
+        .atTime(LocalTime.MAX)
+        .atZone(zoneId)
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusMonths(1)
+                DateRange.NEXT -> it.plusMonths(1)
+                else -> it
+            }
+        }
+        .toInstant()
+        .toEpochMilli()
+
+    return startOfMonth to endOfMonth
+}
+
+fun getCurrentYearRange(
+    dateRange: DateRange = DateRange.CURRENT,
+    zoneId: ZoneId = ZoneId.systemDefault()
+): Pair<Long, Long> {
+
+    val now = ZonedDateTime.now(zoneId)
+
+    val start = now
+        .with(TemporalAdjusters.firstDayOfYear())
+        .toLocalDate()
+        .atStartOfDay(zoneId)
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusYears(1)
+                DateRange.NEXT -> it.plusYears(1)
+                else -> it
+            }
+        }
+        .toInstant()
+        .toEpochMilli()
+
+    val endExclusive = now
+        .with(TemporalAdjusters.firstDayOfNextYear())
+        .toLocalDate()
+        .let {
+            when (dateRange) {
+                DateRange.PREVIOUS -> it.minusYears(1)
+                DateRange.NEXT -> it.plusYears(1)
+                else -> it
+            }
+        }
+        .atStartOfDay(zoneId)
+        .toInstant()
+        .toEpochMilli()
+
+    return start to endExclusive
+}
+
+fun Long.toDateString(pattern: String = "MMM dd, yyyy 'at' HH:mm a"): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return Instant.ofEpochMilli(this)
         .atZone(ZoneId.systemDefault())
         .format(formatter)
+}
+
+enum class DateRange(val value: Int) {
+    PREVIOUS(0), CURRENT(1), NEXT(2)
 }
