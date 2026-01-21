@@ -13,15 +13,38 @@ interface MeasurementDao {
     fun getMeasurements(startDate: Long, endDate: Long): Flow<List<MeasurementEntity>>
 
     @Query("SELECT " +
-            "    (strftime('%s', date(created_at / 1000, 'unixepoch', 'localtime')) * 1000) AS date, " +
+            "    (strftime('%s', date(created_at / 1000, 'unixepoch', 'localtime')) * 1000) AS startDate, " +
+            "    (strftime('%s', date(created_at / 1000, 'unixepoch', 'localtime')) * 1000) + (24 * 60 * 60 * 1000) - 1 AS endDate, " +
             "    AVG(systolic)   AS avg_sys, " +
             "    AVG(diastolic)   AS avg_dia, " +
             "    AVG(pulse) AS avg_pulse " +
             "FROM MeasurementEntity " +
-            "WHERE created_at BETWEEN :startDate\t AND  :endDate " +
-            "GROUP BY date " +
-            "ORDER BY date DESC")
-    fun getAvgMeasurementsBetween(startDate: Long, endDate: Long): Flow<List<MeasurementQueryResult>>
+            "WHERE created_at BETWEEN :startDate AND  :endDate " +
+            "GROUP BY startDate " +
+            "ORDER BY startDate DESC")
+    fun getWeeklyAvgMeasurementsBetween(startDate: Long, endDate: Long): Flow<List<MeasurementQueryResult>>
+
+    @Query( "SELECT" +
+            "    startDate, " +
+            "    startDate + (7 * 24 * 60 * 60 * 1000) - 1 AS endDate," +
+            "    AVG(systolic)  AS avg_sys," +
+            "    AVG(diastolic) AS avg_dia," +
+            "    AVG(pulse)     AS avg_pulse" +
+            " FROM (" +
+            "    SELECT" +
+            "        ((created_at / 1000 - strftime('%s', '1970-01-05')) / (7 * 86400))" +
+            "            * (7 * 86400) * 1000" +
+            "            + strftime('%s', '1970-01-05') * 1000" +
+            "            AS startDate," +
+            "        systolic," +
+            "        diastolic," +
+            "        pulse" +
+            "    FROM MeasurementEntity " +
+            "    WHERE created_at BETWEEN :startDate AND :endDate" +
+            ") " +
+            "GROUP BY startDate " +
+            "ORDER BY startDate DESC")
+    fun getMonthlyAvgMeasurementsBetween(startDate: Long, endDate: Long): Flow<List<MeasurementQueryResult>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsert(entity: MeasurementEntity)

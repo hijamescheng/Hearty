@@ -24,5 +24,11 @@ class RoomMeasurementDataSource @Inject constructor(val heartyRoomDB: HeartyRoom
         startDate: Long,
         endDate: Long
     ): Flow<List<MeasurementQueryResult>> =
-        heartyRoomDB.measurementDao().getAvgMeasurementsBetween(startDate, endDate)
+        heartyRoomDB.measurementDao().getWeeklyAvgMeasurementsBetween(startDate, endDate)
+
+    override fun getAvgMonthlyMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<List<MeasurementQueryResult>> =
+        heartyRoomDB.measurementDao().getMonthlyAvgMeasurementsBetween(startDate, endDate)
 }

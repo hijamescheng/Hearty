@@ -13,4 +13,10 @@ interface MeasurementRepository {
         startDate: Long,
         endDate: Long
     ): Flow<Result<List<MeasurementQueryResult>>>
+
+    suspend fun getAvgMonthlyMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<Result<List<MeasurementQueryResult>>>
+
 }

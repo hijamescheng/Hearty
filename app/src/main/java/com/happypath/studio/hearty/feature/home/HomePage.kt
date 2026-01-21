@@ -102,28 +102,44 @@ fun HomeTabNavHost(
     ) {
         composable(HomeTabDestination.Day.route) {
             val uistate = homeViewModel.dayTabUiState.collectAsStateWithLifecycle().value
-            HomeTabScreen(innerPadding, HomeTabDestination.Day, uistate)
+            HomeTabScreen(
+                uiState = uistate,
+                onPrevious = { homeViewModel.onDayRangeChanged(true, MeasurementScope.DAY) },
+                onNext = { homeViewModel.onDayRangeChanged(false, MeasurementScope.DAY) }
+            )
         }
         composable(HomeTabDestination.Week.route) {
             val uistate = homeViewModel.weekTabUiState.collectAsStateWithLifecycle().value
-            HomeTabScreen(innerPadding, HomeTabDestination.Week, uistate)
+            HomeTabScreen(
+                uiState = uistate,
+                onPrevious = { homeViewModel.onDayRangeChanged(true, MeasurementScope.WEEK) },
+                onNext = { homeViewModel.onDayRangeChanged(false, MeasurementScope.WEEK) }
+            )
         }
         composable(HomeTabDestination.Month.route) {
             val uistate = homeViewModel.monthTabUiState.collectAsStateWithLifecycle().value
-            HomeTabScreen(innerPadding, HomeTabDestination.Month, uistate)
+            HomeTabScreen(
+                uiState = uistate,
+                onPrevious = { homeViewModel.onDayRangeChanged(true, MeasurementScope.MONTH) },
+                onNext = { homeViewModel.onDayRangeChanged(false, MeasurementScope.MONTH) }
+            )
         }
         composable(HomeTabDestination.Year.route) {
             val uistate = homeViewModel.yearTabUiState.collectAsStateWithLifecycle().value
-            HomeTabScreen(innerPadding, HomeTabDestination.Year, uistate)
+            HomeTabScreen(
+                uiState = uistate,
+                onPrevious = { homeViewModel.onDayRangeChanged(true, MeasurementScope.YEAR) },
+                onNext = { homeViewModel.onDayRangeChanged(false, MeasurementScope.YEAR) }
+            )
         }
     }
 }
 
 @Composable
 fun HomeTabScreen(
-    innerPadding: PaddingValues,
-    destination: HomeTabDestination,
-    uiState: HomePageUiState
+    uiState: HomeTabPageUiState,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
 ) {
     LazyColumn(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))) {
         item {
@@ -132,14 +148,14 @@ fun HomeTabScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { onPrevious() }) {
                     Icon(
                         Icons.AutoMirrored.Default.KeyboardArrowLeft,
                         contentDescription = "previous"
                     )
                 }
                 Text(uiState.dateRangeText, fontWeight = FontWeight.W500)
-                IconButton(onClick = {}) {
+                IconButton(onClick = { onNext() }, enabled = uiState.isNextButtonEnabled) {
                     Icon(
                         Icons.AutoMirrored.Default.KeyboardArrowRight,
                         contentDescription = "previous"

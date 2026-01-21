@@ -11,4 +11,6 @@ interface LocalMeasurementDataSource {
     fun getMeasurements(startDate: Long, endDate: Long): Flow<List<MeasurementEntity>>
 
     fun getAvgMeasurementsBetween(startDate: Long, endDate: Long): Flow<List<MeasurementQueryResult>>
+
+    fun getAvgMonthlyMeasurementsBetween(startDate: Long, endDate: Long): Flow<List<MeasurementQueryResult>>
 }

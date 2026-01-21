@@ -65,12 +65,19 @@ fun previousDayRange(startDateMillis: Long, isPrevious: Boolean): Pair<Long, Lon
     return startOfPreviousDay to endOfPreviousDay
 }
 
-fun getStartAndEndOfToday(dateRange: DateRange = DateRange.CURRENT): Pair<Long, Long> {
-    val today = LocalDate.now()
+fun getStartAndEndOfToday(
+    dateRange: DateRange = DateRange.CURRENT,
+    targetDate: Long = System.currentTimeMillis(),
+    zoneId: ZoneId = ZoneId.systemDefault()
+): Pair<Long, Long> {
+    val today = Instant
+        .ofEpochMilli(targetDate)
+        .atZone(zoneId)
+        .toLocalDate()
 
     // Start of day
     val startOfDay = today
-        .atStartOfDay(ZoneId.systemDefault())
+        .atStartOfDay(zoneId)
         .let {
             when (dateRange) {
                 DateRange.PREVIOUS -> it.minusDays(1)
@@ -83,7 +90,7 @@ fun getStartAndEndOfToday(dateRange: DateRange = DateRange.CURRENT): Pair<Long, 
     // End of day (23:59:59.999)
     val endOfDay = today
         .atTime(23, 59, 59, 999_000_000)
-        .atZone(ZoneId.systemDefault())
+        .atZone(zoneId)
         .let {
             when (dateRange) {
                 DateRange.PREVIOUS -> it.minusDays(1)
@@ -99,9 +106,11 @@ fun getStartAndEndOfToday(dateRange: DateRange = DateRange.CURRENT): Pair<Long, 
 
 fun getCurrentWeekRange(
     dateRange: DateRange = DateRange.CURRENT,
+    targetDate: Long = System.currentTimeMillis(),
     zoneId: ZoneId = ZoneId.systemDefault()
 ): Pair<Long, Long> {
-    val now = ZonedDateTime.now(zoneId)
+    val now = Instant.ofEpochMilli(targetDate)
+        .atZone(ZoneId.systemDefault())
 
     val startOfWeek = now
         .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -137,10 +146,12 @@ fun getCurrentWeekRange(
 
 fun getCurrentMonthRange(
     dateRange: DateRange = DateRange.CURRENT,
+    targetDate: Long = System.currentTimeMillis(),
     zoneId: ZoneId = ZoneId.systemDefault()
 ): Pair<Long, Long> {
 
-    val now = ZonedDateTime.now(zoneId)
+    val now = Instant.ofEpochMilli(targetDate)
+        .atZone(ZoneId.systemDefault())
 
     val startOfMonth = now
         .with(TemporalAdjusters.firstDayOfMonth())
@@ -176,10 +187,12 @@ fun getCurrentMonthRange(
 
 fun getCurrentYearRange(
     dateRange: DateRange = DateRange.CURRENT,
+    targetDate: Long = System.currentTimeMillis(),
     zoneId: ZoneId = ZoneId.systemDefault()
 ): Pair<Long, Long> {
 
-    val now = ZonedDateTime.now(zoneId)
+    val now = Instant.ofEpochMilli(targetDate)
+        .atZone(ZoneId.systemDefault())
 
     val start = now
         .with(TemporalAdjusters.firstDayOfYear())
@@ -210,6 +223,12 @@ fun getCurrentYearRange(
         .toEpochMilli()
 
     return start to endExclusive
+}
+
+fun isCurrentDateWithin(startDate: Long, endDate: Long): Boolean {
+    val now = Instant.ofEpochMilli(System.currentTimeMillis())
+        .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    return now >= startDate && now <= endDate
 }
 
 fun Long.toDateString(pattern: String = "MMM dd, yyyy 'at' HH:mm a"): String {

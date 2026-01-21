@@ -52,4 +52,15 @@ class MeasurementRepositoryImpl @Inject constructor(
             emit(Result.failure(e))
         }.flowOn(ioDispatcher)
     }
+
+    override suspend fun getAvgMonthlyMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<Result<List<MeasurementQueryResult>>> {
+        return localDataSource.getAvgMonthlyMeasurementsBetween(startDate, endDate).map { result ->
+            Result.success(result)
+        }.catch { e ->
+            emit(Result.failure(e))
+        }.flowOn(ioDispatcher)
+    }
 }
