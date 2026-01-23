@@ -23,6 +23,7 @@ turbine = "1.2.1"
 navigationCompose = "2.9.6"
 numberPicker = "1.0.5"
 hiltNavigation = "1.2.0"
+material = "1.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,6 +65,7 @@ mockitoKTX = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.re
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 coroutineTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutineTest" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

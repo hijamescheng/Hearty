@@ -13,14 +13,14 @@ class RoomMeasurementDataSource @Inject constructor(val heartyRoomDB: HeartyRoom
     override fun addMeasurement(entity: MeasurementEntity) =
         heartyRoomDB.measurementDao().upsert(entity)
 
-    override fun getMeasurements(
+    override fun getAvgDailyMeasurementsBetween(
         startDate: Long,
         endDate: Long
-    ): Flow<List<MeasurementEntity>> {
-        return heartyRoomDB.measurementDao().getMeasurements(startDate, endDate)
+    ): Flow<List<MeasurementQueryResult>> {
+        return heartyRoomDB.measurementDao().getDailyAvgMeasurementsBetween(startDate, endDate)
     }
 
-    override fun getAvgMeasurementsBetween(
+    override fun getAvgWeeklyMeasurementsBetween(
         startDate: Long,
         endDate: Long
     ): Flow<List<MeasurementQueryResult>> =
@@ -31,4 +31,10 @@ class RoomMeasurementDataSource @Inject constructor(val heartyRoomDB: HeartyRoom
         endDate: Long
     ): Flow<List<MeasurementQueryResult>> =
         heartyRoomDB.measurementDao().getMonthlyAvgMeasurementsBetween(startDate, endDate)
+
+    override fun getAvgYearlyMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<List<MeasurementQueryResult>> =
+        heartyRoomDB.measurementDao().getYearlyAvgMeasurementsBetween(startDate, endDate)
 }

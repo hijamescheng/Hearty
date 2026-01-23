@@ -1,6 +1,8 @@
 package com.happypath.studio.hearty.feature.adddata
 
 import com.happypath.studio.hearty.domain.BloodPressureMeasurement
+import com.happypath.studio.hearty.util.formatDateWithTodayYesterday
+import com.happypath.studio.hearty.util.formatTime
 
 data class AddDataUIState(
     val createdAt: Long = System.currentTimeMillis(),
@@ -8,6 +10,10 @@ data class AddDataUIState(
     val diastolic: Int = 75,
     val heartRate: Int = 80,
     val armLocation: Int = ArmLocation.RIGHT.value,
+    val showDatePicker: Boolean = false,
+    val showTimePicker: Boolean = false,
+    val dateString: String = formatDateWithTodayYesterday(),
+    val timeString: String = formatTime(),
     val note: String = ""
 )
 

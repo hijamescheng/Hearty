@@ -238,6 +238,51 @@ fun Long.toDateString(pattern: String = "MMM dd, yyyy 'at' HH:mm a"): String {
         .format(formatter)
 }
 
+fun formatDateWithTodayYesterday(
+    epochMillis: Long = System.currentTimeMillis(),
+    zoneId: ZoneId = ZoneId.systemDefault()
+): String {
+    val date = Instant.ofEpochMilli(epochMillis)
+        .atZone(zoneId)
+        .toLocalDate()
+
+    val today = LocalDate.now(zoneId)
+
+    return when (date) {
+        today -> "Today"
+        today.minusDays(1) -> "Yesterday"
+        else -> {
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy")
+            date.format(formatter)
+        }
+    }
+}
+
+fun formatTime(
+    epochMillis: Long = System.currentTimeMillis(),
+    zoneId: ZoneId = ZoneId.systemDefault()
+): String {
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    return Instant.ofEpochMilli(epochMillis)
+        .atZone(zoneId)
+        .format(formatter)
+}
+
+fun updateDateTimeWithHourMinute(
+    epochMillis: Long,
+    hour: Int,
+    minute: Int,
+    zoneId: ZoneId = ZoneId.systemDefault()
+): Long {
+    val dateTime = Instant.ofEpochMilli(epochMillis).atZone(zoneId)
+    val updated = dateTime
+        .withHour(hour)
+        .withMinute(minute)
+        .withSecond(0)
+        .withNano(0)
+    return updated.toInstant().toEpochMilli()
+}
+
 enum class DateRange(val value: Int) {
     PREVIOUS(0), CURRENT(1), NEXT(2)
 }

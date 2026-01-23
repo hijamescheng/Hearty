@@ -11,11 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -24,37 +19,26 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.happypath.studio.hearty.R
+import com.happypath.studio.hearty.core.ui.DatePicker
 import com.happypath.studio.hearty.core.ui.NumberPicker
+import com.happypath.studio.hearty.core.ui.TimePicker
 import com.happypath.studio.hearty.core.ui.theme.CardBackground
-import com.happypath.studio.hearty.feature.home.cardColor
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDataScreen(innerPadding: PaddingValues, viewModel: AddDataViewModel) {
-    val uiState = viewModel.uistate.collectAsStateWithLifecycle()
+    val uiState = viewModel.uistate.collectAsStateWithLifecycle().value
     Column(
         modifier = Modifier.padding(innerPadding)
     ) {
@@ -68,34 +52,72 @@ fun AddDataScreen(innerPadding: PaddingValues, viewModel: AddDataViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_medium)),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Time")
 
             Row {
-                DatePickerExample(onDateSelected = {})
+                TextButton(onClick = { viewModel.onEvent(AddDataFormEvent.OnDatePickerShow) }) {
+                    Text(uiState.dateString)
+                }
 
-                var showDialog by remember { mutableStateOf(false) }
-                TextButton(onClick = { showDialog = true }) { Text("12:00") }
+                if (uiState.showDatePicker) {
+                    DatePicker(
+                        onDateSelected = {
+                            viewModel.onEvent(AddDataFormEvent.OnDateSelected(it))
+                        },
+                        onDialogDismiss = {
+                            viewModel.onEvent(
+                                AddDataFormEvent.OnDatePickerDismiss
+                            )
+                        })
+                }
 
-                if (showDialog) {
-                    EnterTime(onConfirm = { showDialog = false }, onDismiss = {
-                        showDialog = false
-                    })
+                TextButton(onClick = { viewModel.onEvent(AddDataFormEvent.OnTimePickerShow) }) {
+                    Text(
+                        uiState.timeString
+                    )
+                }
+                if (uiState.showTimePicker) {
+                    TimePicker(
+                        onConfirm = { hour, minute ->
+                            viewModel.onEvent(AddDataFormEvent.OnTimeSelected(hour, minute))
+                        },
+                        onDismiss = {
+                            viewModel.onEvent(AddDataFormEvent.OnTimePickerDismiss)
+                        })
                 }
             }
         }
         HorizontalDivider()
         SelectBloodPressureRecord(
-            systolic = uiState.value.systolic,
-            diastolic = uiState.value.diastolic,
+            systolic = uiState.systolic,
+            diastolic = uiState.diastolic,
             onSystolicChange = {
                 viewModel.onEvent(AddDataFormEvent.OnSystolicChange(it))
             },
             onDiastolicChange = {
                 viewModel.onEvent(AddDataFormEvent.OnDiastolicChange(it))
-            }
+            })
+        HorizontalDivider()
+        Text(
+            text = stringResource(R.string.add_measurement_pulse),
+            modifier = Modifier.padding(
+                start = dimensionResource(R.dimen.padding_medium),
+                top = dimensionResource(R.dimen.padding_medium)
+            )
         )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            NumberPicker(
+                range = 1..200,
+                initialValue = 70,
+                modifier = Modifier.width(dimensionResource(R.dimen.date_time_picker_width)),
+                onValueChange = { viewModel.onEvent(AddDataFormEvent.OnPulseChange(it)) })
+        }
         HorizontalDivider(modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_medium)))
         Text(
             stringResource(R.string.add_measurement_details_title),
@@ -109,96 +131,12 @@ fun AddDataScreen(innerPadding: PaddingValues, viewModel: AddDataViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(stringResource(R.string.add_measurement_arm_location))
-            ArmLocationSegButtons(uiState.value.armLocation) {
+            ArmLocationSegButtons(uiState.armLocation) {
                 viewModel.onEvent(AddDataFormEvent.OnArmLocationChange(it))
             }
         }
-        AddNote(uiState.value.note) {
+        AddNote(uiState.note) {
             viewModel.onEvent(AddDataFormEvent.OnNoteUpdate(it))
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerExample(
-    onDateSelected: (LocalDate) -> Unit
-) {
-    var showPicker by remember { mutableStateOf(false) }
-
-    TextButton(onClick = { showPicker = true }) {
-        Text("Time")
-    }
-
-    if (showPicker) {
-        val datePickerState = rememberDatePickerState()
-
-        DatePickerDialog(
-            onDismissRequest = { showPicker = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val date = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                            onDateSelected(date)
-                        }
-                        showPicker = false
-                    }
-                ) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showPicker = false }) {
-                    Text("Cancel")
-                }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EnterTime(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val currentTime = Calendar.getInstance()
-
-    val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
-        is24Hour = true,
-    )
-    BasicAlertDialog(onDismissRequest = onDismiss) {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            colors = cardColor()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Enter time")
-                TimeInput(
-                    modifier = Modifier.padding(top = 16.dp),
-                    state = timePickerState,
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
-                    TextButton(onClick = onConfirm) {
-                        Text("OK")
-                    }
-                }
-            }
         }
     }
 }
@@ -214,8 +152,8 @@ fun AddNote(note: String, onNoteChange: (String) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = dimensionResource(R.dimen.padding_medium))
-                .height(120.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
+                .height(dimensionResource(R.dimen.note_width))
+                .clip(shape = RoundedCornerShape(dimensionResource(R.dimen.padding_small)))
                 .background(color = CardBackground),
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface
@@ -226,10 +164,7 @@ fun AddNote(note: String, onNoteChange: (String) -> Unit) {
 
 @Composable
 fun SelectBloodPressureRecord(
-    systolic: Int,
-    diastolic: Int,
-    onSystolicChange: (Int) -> Unit,
-    onDiastolicChange: (Int) -> Unit
+    systolic: Int, diastolic: Int, onSystolicChange: (Int) -> Unit, onDiastolicChange: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -248,13 +183,13 @@ fun SelectBloodPressureRecord(
         NumberPicker(
             range = 80..200,
             initialValue = systolic,
-            modifier = Modifier.width(100.dp),
+            modifier = Modifier.width(dimensionResource(R.dimen.date_time_picker_width)),
             onValueChange = { onSystolicChange(it) })
         Text(stringResource(R.string.add_measurement_separator))
         NumberPicker(
             range = 50..150,
             initialValue = diastolic,
-            modifier = Modifier.width(100.dp),
+            modifier = Modifier.width(dimensionResource(R.dimen.date_time_picker_width)),
             onValueChange = { onDiastolicChange(it) })
     }
 }
@@ -267,8 +202,7 @@ fun ArmLocationSegButtons(armLocation: Int, onValueChange: (Int) -> Unit) {
         options.forEachIndexed { index, label ->
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size
+                    index = index, count = options.size
                 ),
                 onClick = { onValueChange(index) },
                 selected = index == armLocation,

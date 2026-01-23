@@ -4,12 +4,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface MeasurementRepository {
     suspend fun addMeasurement(measurement: BloodPressureMeasurement): Result<Unit>
-    suspend fun getMeasurements(
+    suspend fun getAvgDailyMeasurementsBetween(
         startDate: Long,
         endDate: Long
-    ): Flow<Result<List<BloodPressureMeasurement>>>
+    ): Flow<Result<List<MeasurementQueryResult>>>
 
-    suspend fun getAvgMeasurementsBetween(
+    suspend fun getAvgWeeklyMeasurementsBetween(
         startDate: Long,
         endDate: Long
     ): Flow<Result<List<MeasurementQueryResult>>>
@@ -19,4 +19,8 @@ interface MeasurementRepository {
         endDate: Long
     ): Flow<Result<List<MeasurementQueryResult>>>
 
+    suspend fun getAvgYearlyMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<Result<List<MeasurementQueryResult>>>
 }

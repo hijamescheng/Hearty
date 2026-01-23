@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,10 +34,9 @@ import com.happypath.studio.hearty.core.ui.theme.HeartyTheme
 import com.happypath.studio.hearty.core.ui.theme.Pink40
 import com.happypath.studio.hearty.feature.adddata.AddDataScreen
 import com.happypath.studio.hearty.feature.adddata.AddDataViewModel
+import com.happypath.studio.hearty.feature.home.HistoryPage
 import com.happypath.studio.hearty.feature.home.HomePage
-import com.happypath.studio.hearty.feature.home.HomeTabDestination
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.getValue
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -113,7 +111,8 @@ class MainActivity : ComponentActivity() {
                 composable(destination.route) {
                     when (destination) {
                         Destination.HOME -> HomePage(innerPadding)
-                        Destination.Journal, Destination.Profile -> TestPage(innerPadding)
+                        Destination.Journal -> HistoryPage(innerPadding)
+                        Destination.Profile -> TestPage(innerPadding)
                         else -> {
                             val addDataEntry = remember(navController, Destination.AddData.route) {
                                 navController.getBackStackEntry(Destination.AddData.route)

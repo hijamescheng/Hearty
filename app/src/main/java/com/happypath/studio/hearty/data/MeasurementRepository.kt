@@ -1,7 +1,6 @@
 package com.happypath.studio.hearty.data
 
 import androidx.sqlite.SQLiteException
-import com.happypath.studio.hearty.data.room.toDomain
 import com.happypath.studio.hearty.data.room.toEntity
 import com.happypath.studio.hearty.domain.BloodPressureMeasurement
 import com.happypath.studio.hearty.domain.MeasurementQueryResult
@@ -31,22 +30,22 @@ class MeasurementRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getMeasurements(
+    override suspend fun getAvgDailyMeasurementsBetween(
         startDate: Long,
         endDate: Long
-    ): Flow<Result<List<BloodPressureMeasurement>>> {
-        return localDataSource.getMeasurements(startDate, endDate).map { result ->
-            Result.success(result.map { it.toDomain() })
+    ): Flow<Result<List<MeasurementQueryResult>>> {
+        return localDataSource.getAvgDailyMeasurementsBetween(startDate, endDate).map { result ->
+            Result.success(result)
         }.catch { e ->
             emit(Result.failure(e))
         }.flowOn(ioDispatcher)
     }
 
-    override suspend fun getAvgMeasurementsBetween(
+    override suspend fun getAvgWeeklyMeasurementsBetween(
         startDate: Long,
         endDate: Long
     ): Flow<Result<List<MeasurementQueryResult>>> {
-        return localDataSource.getAvgMeasurementsBetween(startDate, endDate).map { result ->
+        return localDataSource.getAvgWeeklyMeasurementsBetween(startDate, endDate).map { result ->
             Result.success(result)
         }.catch { e ->
             emit(Result.failure(e))
@@ -58,6 +57,17 @@ class MeasurementRepositoryImpl @Inject constructor(
         endDate: Long
     ): Flow<Result<List<MeasurementQueryResult>>> {
         return localDataSource.getAvgMonthlyMeasurementsBetween(startDate, endDate).map { result ->
+            Result.success(result)
+        }.catch { e ->
+            emit(Result.failure(e))
+        }.flowOn(ioDispatcher)
+    }
+
+    override suspend fun getAvgYearlyMeasurementsBetween(
+        startDate: Long,
+        endDate: Long
+    ): Flow<Result<List<MeasurementQueryResult>>> {
+        return localDataSource.getAvgYearlyMeasurementsBetween(startDate, endDate).map { result ->
             Result.success(result)
         }.catch { e ->
             emit(Result.failure(e))
