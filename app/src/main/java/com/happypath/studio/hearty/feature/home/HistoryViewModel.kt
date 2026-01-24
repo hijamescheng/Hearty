@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.happypath.studio.hearty.core.ui.ReadingType
 import com.happypath.studio.hearty.domain.GetAvgDailyMeasurementUseCase
-import com.happypath.studio.hearty.domain.GetAvgWeeklyMeasurementUseCase
 import com.happypath.studio.hearty.domain.GetAvgMonthlyMeasurementUseCase
+import com.happypath.studio.hearty.domain.GetAvgWeeklyMeasurementUseCase
 import com.happypath.studio.hearty.domain.GetAvgYearlyMeasurementUseCase
 import com.happypath.studio.hearty.domain.MeasurementQueryResult
 import com.happypath.studio.hearty.feature.home.MeasurementScope.DAY
@@ -16,7 +16,6 @@ import com.happypath.studio.hearty.util.DateRange
 import com.happypath.studio.hearty.util.getCurrentMonthRange
 import com.happypath.studio.hearty.util.getCurrentWeekRange
 import com.happypath.studio.hearty.util.getCurrentYearRange
-import com.happypath.studio.hearty.util.getStartAndEndOfToday
 import com.happypath.studio.hearty.util.isCurrentDateWithin
 import com.happypath.studio.hearty.util.toDateString
 import dagger.hilt.android.lifecycle.HiltViewModel
