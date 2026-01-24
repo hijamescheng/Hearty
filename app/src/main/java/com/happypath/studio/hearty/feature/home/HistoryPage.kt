@@ -37,6 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.happypath.studio.hearty.R
+import com.happypath.studio.hearty.core.ui.Indicator
 import com.happypath.studio.hearty.core.ui.theme.CardBackground
 import com.happypath.studio.hearty.core.ui.theme.Subtext
 import com.happypath.studio.hearty.core.ui.theme.WindowBackground
@@ -169,7 +170,13 @@ fun HomeTabScreen(
 
 @Composable
 fun NoDataScreen() {
-    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 32.dp)) {
+    Column(
+        modifier = Modifier.padding(
+            start = dimensionResource(R.dimen.padding_medium),
+            end = dimensionResource(R.dimen.padding_medium),
+            top = 32.dp
+        )
+    ) {
         Text(
             stringResource(R.string.no_data_title),
             fontSize = 40.sp,
@@ -197,42 +204,51 @@ fun AvgMeasurementCard(avgMeasurement: AvgMeasurement, position: Int) {
 
     val cornerShape = when (position) {
         -1 -> RoundedCornerShape(
-            topStart = 20.dp,
-            topEnd = 20.dp,
-            bottomStart = 20.dp,
-            bottomEnd = 20.dp,
+            topStart = dimensionResource(R.dimen.corner_radius_medium),
+            topEnd = dimensionResource(R.dimen.corner_radius_medium),
+            bottomStart = dimensionResource(R.dimen.corner_radius_medium),
+            bottomEnd = dimensionResource(R.dimen.corner_radius_medium),
         )
 
         0 -> RoundedCornerShape(
-            topStart = 20.dp,
-            topEnd = 20.dp,
-            bottomStart = 5.dp,
-            bottomEnd = 5.dp
+            topStart = dimensionResource(R.dimen.corner_radius_medium),
+            topEnd = dimensionResource(R.dimen.corner_radius_medium),
+            bottomStart = dimensionResource(R.dimen.corner_radius_small),
+            bottomEnd = dimensionResource(R.dimen.corner_radius_small),
         )
 
-        1 -> RoundedCornerShape(5.dp)
+        1 -> RoundedCornerShape(dimensionResource(R.dimen.corner_radius_small))
         else -> RoundedCornerShape(
-            topStart = 5.dp,
-            topEnd = 5.dp,
-            bottomStart = 20.dp,
-            bottomEnd = 20.dp
+            topStart = dimensionResource(R.dimen.corner_radius_small),
+            topEnd = dimensionResource(R.dimen.corner_radius_small),
+            bottomStart = dimensionResource(R.dimen.corner_radius_medium),
+            bottomEnd = dimensionResource(R.dimen.corner_radius_medium),
         )
     }
 
     Card(
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
         colors = cardColor(),
         shape = cornerShape
     ) {
-        Text(
-            text = avgMeasurement.dateText,
-            fontWeight = FontWeight.W500,
-            modifier = Modifier.padding(16.dp)
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(dimensionResource(R.dimen.padding_medium)),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = avgMeasurement.dateText,
+                fontWeight = FontWeight.W500
+            )
+            Indicator(type = avgMeasurement.readingType)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimensionResource(R.dimen.padding_medium)),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
@@ -245,7 +261,7 @@ fun AvgMeasurementCard(avgMeasurement: AvgMeasurement, position: Int) {
                     fontWeight = FontWeight.W400
                 )
                 Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_small)),
                     text = avgMeasurement.avgSys,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Normal
@@ -262,7 +278,7 @@ fun AvgMeasurementCard(avgMeasurement: AvgMeasurement, position: Int) {
                     fontWeight = FontWeight.W400
                 )
                 Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_small)),
                     text = avgMeasurement.avgDia,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Normal
@@ -279,7 +295,7 @@ fun AvgMeasurementCard(avgMeasurement: AvgMeasurement, position: Int) {
                     fontWeight = FontWeight.W400
                 )
                 Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_small)),
                     text = avgMeasurement.avgPulse,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Normal

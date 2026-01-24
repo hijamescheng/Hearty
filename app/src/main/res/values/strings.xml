@@ -21,4 +21,7 @@
     <string name="no_data_description">No data lodged for this period</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="reading_normal">NORMAL</string>
+    <string name="reading_elevated">ELEVATED</string>
+    <string name="reading_high">HIGH</string>
 </resources>

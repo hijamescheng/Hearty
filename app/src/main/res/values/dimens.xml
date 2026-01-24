@@ -7,4 +7,6 @@
     <dimen name="text_size_large">35sp</dimen>
     <dimen name="date_time_picker_width">100dp</dimen>
     <dimen name="note_width">120dp</dimen>
+    <dimen name="corner_radius_medium">20sp</dimen>
+    <dimen name="corner_radius_small">5sp</dimen>
 </resources>

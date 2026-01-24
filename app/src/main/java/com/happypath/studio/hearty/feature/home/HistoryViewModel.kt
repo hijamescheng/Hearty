@@ -2,6 +2,7 @@ package com.happypath.studio.hearty.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.happypath.studio.hearty.core.ui.ReadingType
 import com.happypath.studio.hearty.domain.GetAvgDailyMeasurementUseCase
 import com.happypath.studio.hearty.domain.GetAvgWeeklyMeasurementUseCase
 import com.happypath.studio.hearty.domain.GetAvgMonthlyMeasurementUseCase
@@ -152,8 +153,19 @@ fun MeasurementQueryResult.toAvgMeasurement(scope: MeasurementScope): AvgMeasure
         dateText = dateText,
         avgSys = avg_sys.toString(),
         avgDia = avg_dia.toString(),
-        avgPulse = avg_pulse.toString()
+        avgPulse = avg_pulse.toString(),
+        readingType = getReadingType(avg_sys, avg_dia)
     )
+}
+
+fun getReadingType(sys: Long, dia: Long): ReadingType {
+    return if (sys < 120 && dia < 80) {
+        ReadingType.NORMAL
+    } else if (sys in 120..139 || dia in 80..89) {
+        ReadingType.ELEVATED
+    } else {
+        ReadingType.HIGH
+    }
 }
 
 data class HomeTabPageUiState(
@@ -169,7 +181,8 @@ data class AvgMeasurement(
     val dateText: String,
     val avgSys: String,
     val avgDia: String,
-    val avgPulse: String
+    val avgPulse: String,
+    val readingType: ReadingType
 )
 
 enum class MeasurementScope {
