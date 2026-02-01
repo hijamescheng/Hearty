@@ -24,4 +24,11 @@
     <string name="reading_normal">NORMAL</string>
     <string name="reading_elevated">ELEVATED</string>
     <string name="reading_high">HIGH</string>
+
+    <string name="profile_edit">Edit</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_height_title">Height</string>
+    <string name="profile_weight_title">Weight</string>
+    <string name="profile_birthday_title">Birthday</string>
+    <string name="profile_sex_title">Sex</string>
 </resources>

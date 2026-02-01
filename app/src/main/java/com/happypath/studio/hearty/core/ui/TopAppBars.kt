@@ -17,6 +17,7 @@ import com.happypath.studio.hearty.core.ui.theme.DarkGreen
 import com.happypath.studio.hearty.core.ui.theme.WindowBackground
 import com.happypath.studio.hearty.feature.adddata.AddDataFormEvent
 import com.happypath.studio.hearty.feature.adddata.AddDataViewModel
+import com.happypath.studio.hearty.feature.profile.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +52,48 @@ fun AddDataScreenTopBar(navController: NavController, viewModel: AddDataViewMode
             }
         })
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileScreenTopBar(viewModel: ProfileViewModel, onEdit: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(text = stringResource(R.string.app_name))
+        },
+        colors = topAppBarColor(),
+        actions = {
+            TextButton(onClick = {
+                onEdit()
+            }) {
+                Text(stringResource(R.string.profile_edit))
+            }
+        })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditProfileScreenTopBar(navController: NavController, onSave: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(text = stringResource(R.string.app_name))
+        },
+        navigationIcon = {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Icon(Icons.Default.Close, contentDescription = "Close")
+            }
+        },
+        colors = topAppBarColor(),
+        actions = {
+            TextButton(onClick = {
+                onSave()
+            }) {
+                Text(stringResource(R.string.profile_save))
+            }
+        })
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

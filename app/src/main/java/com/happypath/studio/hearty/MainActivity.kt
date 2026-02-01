@@ -20,14 +20,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.happypath.studio.hearty.core.ui.AddDataScreenTopBar
 import com.happypath.studio.hearty.core.ui.BottomNavigationBar
 import com.happypath.studio.hearty.core.ui.Destination
+import com.happypath.studio.hearty.core.ui.EditProfileScreenTopBar
+import com.happypath.studio.hearty.core.ui.ProfileScreenTopBar
 import com.happypath.studio.hearty.core.ui.TopBar
 import com.happypath.studio.hearty.core.ui.theme.DarkGreen
 import com.happypath.studio.hearty.core.ui.theme.HeartyTheme
@@ -36,6 +42,9 @@ import com.happypath.studio.hearty.feature.adddata.AddDataScreen
 import com.happypath.studio.hearty.feature.adddata.AddDataViewModel
 import com.happypath.studio.hearty.feature.home.HistoryPage
 import com.happypath.studio.hearty.feature.home.HomePage
+import com.happypath.studio.hearty.feature.profile.EditProfilePage
+import com.happypath.studio.hearty.feature.profile.ProfileScreen
+import com.happypath.studio.hearty.feature.profile.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,24 +74,53 @@ class MainActivity : ComponentActivity() {
                     },
                     topBar = {
                         when (currentRoute) {
-                            Destination.AddData.route -> {
-                                val addDataEntry = remember(navController, Destination.AddData.route) {
-                                    navController.getBackStackEntry(Destination.AddData.route)
-                                }
+                            Destination.ADD_DATA.route -> {
+                                val addDataEntry =
+                                    remember(navController, Destination.ADD_DATA.route) {
+                                        navController.getBackStackEntry(Destination.ADD_DATA.route)
+                                    }
                                 val viewModel: AddDataViewModel = hiltViewModel(addDataEntry)
                                 AddDataScreenTopBar(navController, viewModel)
                             }
+
+                            Destination.PROFILE.route -> {
+                                val profileEntry =
+                                    remember(navController, Destination.PROFILE.route) {
+                                        navController.getBackStackEntry(Destination.PROFILE.route)
+                                    }
+                                val profileViewModel: ProfileViewModel = hiltViewModel(profileEntry)
+
+                                ProfileScreenTopBar(profileViewModel, {
+                                    navController.navigate(Destination.EDIT_PROFILE.route)
+                                })
+                            }
+
+                            Destination.EDIT_PROFILE.route -> {
+                                val profileEntry =
+                                    remember(navController, Destination.PROFILE.route) {
+                                        navController.getBackStackEntry(Destination.PROFILE.route)
+                                    }
+                                val profileViewModel: ProfileViewModel = hiltViewModel(profileEntry)
+
+                                EditProfileScreenTopBar(navController, {
+                                    profileViewModel.onEvent(ProfileViewModel.ProfileEvent.Save)
+                                    navController.navigate(
+                                        Destination.PROFILE.route
+                                    )
+                                })
+                            }
+
                             else -> TopBar()
                         }
 
                     },
                     floatingActionButton = {
-                        if (currentRoute != Destination.AddData.route) {
+                        if (currentRoute !in listOf(Destination.ADD_DATA.route, Destination.EDIT_PROFILE.route)) {
                             FloatingActionButton(
                                 containerColor = Pink40,
                                 contentColor = DarkGreen,
                                 onClick = {
-                                    navController.navigate(Destination.AddData.route)
+                                    navController.navigate(Destination.ADD_DATA.route)
                                 }
                             ) {
                                 Icon(Icons.Default.Add, "Add measurement")
@@ -107,31 +145,53 @@ class MainActivity : ComponentActivity() {
             navController,
             startDestination = startDestination.route
         ) {
-            Destination.entries.forEach { destination ->
-                composable(destination.route) {
-                    when (destination) {
-                        Destination.HOME -> HomePage(innerPadding)
-                        Destination.Journal -> HistoryPage(innerPadding)
-                        Destination.Profile -> TestPage(innerPadding)
-                        else -> {
-                            val addDataEntry = remember(navController, Destination.AddData.route) {
-                                navController.getBackStackEntry(Destination.AddData.route)
-                            }
-                            val addDataViewModel: AddDataViewModel = hiltViewModel(addDataEntry)
+            composable(Destination.HOME.route) {
+                HomePage(innerPadding)
+            }
 
-                            AddDataScreen(innerPadding, addDataViewModel)
-                        }
-                    }
+            composable(Destination.JOURNAL.route) {
+                HistoryPage(innerPadding)
+            }
+
+            navigation(
+                startDestination = Destination.PROFILE.route,
+                route = "profile_flow"
+            ) {
+                composable(Destination.PROFILE.route) { backStackEntry ->
+                    val profileViewModel: ProfileViewModel =
+                        getSharedViewModel(navController, backStackEntry, "profile_flow")
+                    ProfileScreen(innerPadding, profileViewModel)
                 }
+
+                composable(Destination.EDIT_PROFILE.route) { backStackEntry ->
+                    val profileViewModel: ProfileViewModel =
+                        getSharedViewModel(navController, backStackEntry, "profile_flow")
+                    EditProfilePage(innerPadding, profileViewModel)
+                }
+            }
+
+            composable(Destination.ADD_DATA.route) {
+                val addDataEntry = remember(navController, Destination.ADD_DATA.route) {
+                    navController.getBackStackEntry(Destination.ADD_DATA.route)
+                }
+                val addDataViewModel: AddDataViewModel = hiltViewModel(addDataEntry)
+
+                AddDataScreen(innerPadding, addDataViewModel)
             }
         }
     }
 
     @Composable
-    fun TestPage(innerPadding: PaddingValues) {
-        Text(
-            text = "Test Page",
-            modifier = Modifier.padding(innerPadding)
-        )
+    inline fun <reified T : ViewModel> getSharedViewModel(
+        navController: NavController,
+        currentEntry: NavBackStackEntry,
+        parentRoute: String
+    ): T {
+        // 1. Find the parent graph's entry in the backstack
+        val parentEntry = remember(currentEntry) {
+            navController.getBackStackEntry(parentRoute)
+        }
+        // 2. Scope the Hilt ViewModel to that parent entry
+        return hiltViewModel(parentEntry)
     }
 }
