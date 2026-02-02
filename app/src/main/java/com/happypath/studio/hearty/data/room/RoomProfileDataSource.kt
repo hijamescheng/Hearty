@@ -14,7 +14,7 @@ class RoomProfileDataSource @Inject constructor(val heartyRoomDB: HeartyRoomDB) 
     LocalProfileDataSource {
     override suspend fun addProfile(profileInfo: ProfileInfo) {
         withContext(Dispatchers.IO) {
-            heartyRoomDB.profileDao().upsert(profileInfo.toEntity())
+            heartyRoomDB.profileDao().deleteAndInsertTransaction(profileInfo.toEntity())
         }
     }
 

@@ -7,14 +7,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -43,6 +41,7 @@ import com.happypath.studio.hearty.feature.adddata.AddDataViewModel
 import com.happypath.studio.hearty.feature.home.HistoryPage
 import com.happypath.studio.hearty.feature.home.HomePage
 import com.happypath.studio.hearty.feature.profile.EditProfilePage
+import com.happypath.studio.hearty.feature.profile.ProfileEditViewModel
 import com.happypath.studio.hearty.feature.profile.ProfileScreen
 import com.happypath.studio.hearty.feature.profile.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -84,30 +83,20 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Destination.PROFILE.route -> {
-                                val profileEntry =
-                                    remember(navController, Destination.PROFILE.route) {
-                                        navController.getBackStackEntry(Destination.PROFILE.route)
-                                    }
-                                val profileViewModel: ProfileViewModel = hiltViewModel(profileEntry)
-
-                                ProfileScreenTopBar(profileViewModel, {
+                                ProfileScreenTopBar {
                                     navController.navigate(Destination.EDIT_PROFILE.route)
-                                })
+                                }
                             }
 
                             Destination.EDIT_PROFILE.route -> {
-                                val profileEntry =
-                                    remember(navController, Destination.PROFILE.route) {
-                                        navController.getBackStackEntry(Destination.PROFILE.route)
-                                    }
-                                val profileViewModel: ProfileViewModel = hiltViewModel(profileEntry)
-
-                                EditProfileScreenTopBar(navController, {
-                                    profileViewModel.onEvent(ProfileViewModel.ProfileEvent.Save)
+                                val profileEditViewModel = getSharedViewModel<ProfileEditViewModel>(
+                                    navController, backStackEntry!!, "profile_flow")
+                                EditProfileScreenTopBar(navController) {
+                                    profileEditViewModel.onEvent(ProfileEditViewModel.ProfileEvent.Save)
                                     navController.navigate(
                                         Destination.PROFILE.route
                                     )
-                                })
+                                }
                             }
 
                             else -> TopBar()
@@ -115,7 +104,11 @@ class MainActivity : ComponentActivity() {
 
                     },
                     floatingActionButton = {
-                        if (currentRoute !in listOf(Destination.ADD_DATA.route, Destination.EDIT_PROFILE.route)) {
+                        if (currentRoute !in listOf(
+                                Destination.ADD_DATA.route,
+                                Destination.EDIT_PROFILE.route
+                            )
+                        ) {
                             FloatingActionButton(
                                 containerColor = Pink40,
                                 contentColor = DarkGreen,
@@ -158,15 +151,19 @@ class MainActivity : ComponentActivity() {
                 route = "profile_flow"
             ) {
                 composable(Destination.PROFILE.route) { backStackEntry ->
-                    val profileViewModel: ProfileViewModel =
-                        getSharedViewModel(navController, backStackEntry, "profile_flow")
+                    val profileEntry = remember(navController, Destination.PROFILE.route) {
+                        navController.getBackStackEntry(Destination.PROFILE.route)
+                    }
+                    val profileViewModel: ProfileViewModel = hiltViewModel(profileEntry)
+
                     ProfileScreen(innerPadding, profileViewModel)
                 }
 
                 composable(Destination.EDIT_PROFILE.route) { backStackEntry ->
-                    val profileViewModel: ProfileViewModel =
-                        getSharedViewModel(navController, backStackEntry, "profile_flow")
-                    EditProfilePage(innerPadding, profileViewModel)
+                    val profileEditViewModel = getSharedViewModel<ProfileEditViewModel>(
+                        navController, backStackEntry, "profile_flow")
+
+                    EditProfilePage(innerPadding, profileEditViewModel)
                 }
             }
 

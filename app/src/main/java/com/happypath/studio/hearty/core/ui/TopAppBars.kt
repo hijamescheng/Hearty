@@ -55,7 +55,7 @@ fun AddDataScreenTopBar(navController: NavController, viewModel: AddDataViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenTopBar(viewModel: ProfileViewModel, onEdit: () -> Unit) {
+fun ProfileScreenTopBar(onEdit: () -> Unit) {
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.app_name))

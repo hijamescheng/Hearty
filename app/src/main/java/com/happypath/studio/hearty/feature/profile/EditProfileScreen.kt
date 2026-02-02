@@ -1,5 +1,6 @@
 package com.happypath.studio.hearty.feature.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,9 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -35,15 +41,14 @@ import com.happypath.studio.hearty.core.ui.DatePicker
 import com.happypath.studio.hearty.core.ui.NumberPicker
 import com.happypath.studio.hearty.core.ui.theme.WindowBackground
 import com.happypath.studio.hearty.feature.home.cardColor
-import com.happypath.studio.hearty.feature.profile.ProfileViewModel.ProfileEvent.Save
-import com.happypath.studio.hearty.feature.profile.ProfileViewModel.ProfileEvent.WeightChanged
-import com.happypath.studio.hearty.feature.profile.ProfileViewModel.ProfileEvent.SexChanged
-import com.happypath.studio.hearty.feature.profile.ProfileViewModel.ProfileEvent.BirthdayChanged
-import com.happypath.studio.hearty.feature.profile.ProfileViewModel.ProfileEvent.HeightChanged
+import com.happypath.studio.hearty.feature.profile.ProfileEditViewModel.ProfileEvent.BirthdayChanged
+import com.happypath.studio.hearty.feature.profile.ProfileEditViewModel.ProfileEvent.HeightChanged
+import com.happypath.studio.hearty.feature.profile.ProfileEditViewModel.ProfileEvent.WeightChanged
 import com.happypath.studio.hearty.util.toDateString
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfilePage(innerPadding: PaddingValues, profileViewModel: ProfileViewModel) {
+fun EditProfilePage(innerPadding: PaddingValues, profileViewModel: ProfileEditViewModel) {
     val profileSate by profileViewModel.profileEditState.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
@@ -147,22 +152,46 @@ fun EditProfilePage(innerPadding: PaddingValues, profileViewModel: ProfileViewMo
                     showSexDialog.value = false
                 })
             }
-            OutlinedTextField(
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Sex") },
-                value = if (profileSate.sex == 1) "Male" else "Female",
-                trailingIcon = {
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Sex")
-                },
-                onValueChange = {}
-            )
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable {
-                        showSexDialog.value = true
-                    })
+            var expanded by remember { mutableStateOf(false) }
+            val options = listOf("Female", "Male", "Other")
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                OutlinedTextField(
+                    readOnly = true,
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    label = { Text("Sex") },
+                    value = when (profileSate.sex) {
+                        0 -> "Female"
+                        1 -> "Male"
+                        else -> "Other"
+                    },
+                    trailingIcon = {
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Sex")
+                    },
+                    onValueChange = {}
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    modifier = Modifier.background(WindowBackground),
+                    onDismissRequest = { expanded = false }
+                ) {
+                    options.forEachIndexed { index, selectionOption ->
+                        DropdownMenuItem(
+                            text = { Text(selectionOption) },
+                            onClick = {
+                                profileViewModel.onEvent(
+                                    ProfileEditViewModel.ProfileEvent.SexChanged(index)
+                                )
+                                expanded = false
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        )
+                    }
+                }
+            }
         }
     }
 }
