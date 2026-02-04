@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.frieBase)
 }
 
 
@@ -19,8 +21,8 @@ android {
         applicationId = "com.happypath.studio.hearty"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,6 +51,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -60,7 +63,12 @@ android {
     kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
-            freeCompilerArgs.set(listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode", "-XXLanguage:+ExplicitBackingFields"))
+            freeCompilerArgs.set(
+                listOf(
+                    "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
+                    "-XXLanguage:+ExplicitBackingFields"
+                )
+            )
         }
     }
 
@@ -74,6 +82,9 @@ dependencies {
     implementation(libs.roomDB)
     implementation(libs.roomKTX)
     implementation(libs.hilt.navigation)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashLatics)
+    implementation(libs.firebase.analytics)
 
     testImplementation(libs.roomTest)
     testImplementation(libs.mockk)

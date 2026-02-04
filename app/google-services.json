@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "66634956023",
+    "project_id": "hearty-c64c5",
+    "storage_bucket": "hearty-c64c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66634956023:android:78757f95d21ec96e8067f2",
+        "android_client_info": {
+          "package_name": "com.happypath.studio.hearty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmKxsA6u0UFsZupHe0s9PnWfGfGzzore4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66634956023:android:fca4edeaa756992e8067f2",
+        "android_client_info": {
+          "package_name": "com.happypath.studio.hearty.dev.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmKxsA6u0UFsZupHe0s9PnWfGfGzzore4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66634956023:android:32a7fdbb3c786fd38067f2",
+        "android_client_info": {
+          "package_name": "com.happypath.studio.hearty.dev.release"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmKxsA6u0UFsZupHe0s9PnWfGfGzzore4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66634956023:android:879d2303f03f74298067f2",
+        "android_client_info": {
+          "package_name": "com.happypath.studio.hearty.prod.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmKxsA6u0UFsZupHe0s9PnWfGfGzzore4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66634956023:android:4ee97a456830df488067f2",
+        "android_client_info": {
+          "package_name": "com.happypath.studio.hearty.prod.release"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmKxsA6u0UFsZupHe0s9PnWfGfGzzore4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
