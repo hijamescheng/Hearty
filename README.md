@@ -1,4 +1,6 @@
-# Hearty
+# <img width="100" height="100" alt="image" src="https://github.com/user-attachments/assets/6e70d1a5-a09d-4fc5-9ae2-ef4f3255b52d" /> Hearty
+
+
 
 Track your blood pressure measurement with Hearty 🚧
 
