@@ -2,7 +2,7 @@
 
 
 
-Track your blood pressure measurement with Hearty 🚧
+Track your blood pressure measurement with [Hearty](https://play.google.com/store/apps/details?id=com.happypath.studio.hearty&hl=en)  
 
 |||
 |---|---|
